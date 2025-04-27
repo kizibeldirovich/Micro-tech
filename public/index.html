@@ -1,30 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Arduino Monitor</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Room Monitor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
 </head>
 <body>
 <div class="container">
     <div class="card">
-        <h2>Людей в помещении:</h2>
-        <div id="peopleCount">0</div>
+        <h2>Людей в помещении</h2>
+        <div id="peopleCount" class="pulse">0</div>
     </div>
+
     <div class="card">
-        <h2>Состояние мотора:</h2>
-        <div id="motorStatus">❌ Выключен</div>
-        <div>Скорость: <span id="motorSpeed">0</span></div>
+        <h2>Состояние системы</h2>
+        <div id="motorStatus" class="status-inactive">❌ Выключен</div>
+        <div>
+            Скорость:
+            <span id="motorSpeed">0</span>
+            <span class="speed-value">об/мин</span>
+        </div>
     </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
+
     socket.on('arduinoData', (data) => {
-        document.getElementById('peopleCount').textContent = data.people;
-        document.getElementById('motorSpeed').textContent = data.speed;
-        document.getElementById('motorStatus').textContent =
-            data.motorStatus ? "✅ Включен" : "❌ Выключен";
+        const peopleCount = document.getElementById('peopleCount');
+        const motorStatus = document.getElementById('motorStatus');
+        const motorSpeed = document.getElementById('motorSpeed');
+
+        // Обновление данных
+        peopleCount.textContent = data.people;
+        motorSpeed.textContent = data.speed;
+
+        // Изменение статуса мотора
+        if(data.motorStatus) {
+            motorStatus.textContent = "✅ Включен";
+            motorStatus.classList.remove('status-inactive');
+            motorStatus.classList.add('status-active');
+            peopleCount.classList.add('pulse');
+        } else {
+            motorStatus.textContent = "❌ Выключен";
+            motorStatus.classList.remove('status-active');
+            motorStatus.classList.add('status-inactive');
+            peopleCount.classList.remove('pulse');
+        }
+
+        // Анимация при изменении количества людей
+        peopleCount.classList.remove('pulse');
+        void peopleCount.offsetWidth; // Trigger reflow
+        peopleCount.classList.add('pulse');
     });
 </script>
 </body>
