@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arduino Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>Людей в помещении:</h2>
+        <div id="peopleCount">0</div>
+    </div>
+    <div class="card">
+        <h2>Состояние мотора:</h2>
+        <div id="motorStatus">❌ Выключен</div>
+        <div>Скорость: <span id="motorSpeed">0</span></div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('arduinoData', (data) => {
+        document.getElementById('peopleCount').textContent = data.people;
+        document.getElementById('motorSpeed').textContent = data.speed;
+        document.getElementById('motorStatus').textContent =
+            data.motorStatus ? "✅ Включен" : "❌ Выключен";
+    });
+</script>
+</body>
+</html>
