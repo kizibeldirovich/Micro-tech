@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Имитация данных Arduino (вместо SerialPort)
+// Имитация данных Arduino
 function simulateArduino() {
     setInterval(() => {
         const mockData = {
@@ -16,14 +16,14 @@ function simulateArduino() {
             speed: Math.floor(Math.random() * 255),   // Случайная скорость мотора
             motorStatus: Math.random() > 0.5          // Случайный статус мотора
         };
-        io.emit('arduinoData', mockData);           // Отправка в браузер
-        console.log("Mock data:", mockData);        // Лог в консоль
-    }, 2000); // Генерация каждые 2 секунды
+        io.emit('arduinoData', mockData);
+        console.log("Mock data:", mockData);
+    }, 2000);
 }
 
 app.use(express.static('public'));
 
 server.listen(3000, () => {
     console.log('Сервер запущен: http://localhost:3000');
-    simulateArduino(); // Запуск генерации данных
+    simulateArduino();
 });
